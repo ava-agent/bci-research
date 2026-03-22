@@ -18,7 +18,9 @@ bci-research/
 │   ├── 04-applications.md             # 应用场景与前沿进展
 │   ├── 05-open-source-resources.md    # 开源项目与开发资源
 │   ├── 06-ethics-and-regulation.md    # 伦理、法规与挑战
-│   └── 07-china-landscape.md          # 中国脑机接口产业与政策
+│   ├── 07-china-landscape.md          # 中国脑机接口产业与政策
+│   ├── 08-bci-ai-fusion.md           # BCI + AI 深度融合（LLM/脑基础模型/跨模态解码）
+│   └── 09-bci-agent-architecture.md  # 脑机接口 Agent 架构设计与实现路径
 ├── references/
 │   └── sources.md                     # 参考文献与信息源
 └── assets/                            # 图片等资源（待补充）
@@ -34,6 +36,9 @@ bci-research/
 | 植入患者数 | Neuralink 已为全球 12 名重度瘫痪患者植入设备（截至 2025.9）|
 | 中国政策 | 七部门联合发布《脑机接口产业创新发展实施意见》（2025.7）|
 | 2030 目标 | 培育 2-3 家全球影响力领军企业 |
+| AI 融合 | LLM Copilot 使瘫痪患者机械臂任务从「无法完成」→ 6.5 分钟完成 |
+| 脑基础模型 | LaBraM 在 2,500 小时 EEG 上预训练，多任务 SOTA（ICLR 2024）|
+| Brain-to-Image | MindEye fMRI→图像重建精确匹配准确率 >90% |
 
 ## 调研时间
 
