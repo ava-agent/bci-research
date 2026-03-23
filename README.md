@@ -20,7 +20,8 @@ bci-research/
 │   ├── 06-ethics-and-regulation.md    # 伦理、法规与挑战
 │   ├── 07-china-landscape.md          # 中国脑机接口产业与政策
 │   ├── 08-bci-ai-fusion.md           # BCI + AI 深度融合（LLM/脑基础模型/跨模态解码）
-│   └── 09-bci-agent-architecture.md  # 脑机接口 Agent 架构设计与实现路径
+│   ├── 09-bci-agent-architecture.md  # 脑机接口 Agent 架构设计与实现路径
+│   └── 10-sdk-selection-mindoctopus.md # MindOctopus SDK 技术选型（硬件+SDK 深度评测）
 ├── references/
 │   └── sources.md                     # 参考文献与信息源
 └── assets/                            # 图片等资源（待补充）
@@ -39,6 +40,7 @@ bci-research/
 | AI 融合 | LLM Copilot 使瘫痪患者机械臂任务从「无法完成」→ 6.5 分钟完成 |
 | 脑基础模型 | LaBraM 在 2,500 小时 EEG 上预训练，多任务 SOTA（ICLR 2024）|
 | Brain-to-Image | MindEye fMRI→图像重建精确匹配准确率 >90% |
+| SDK 选型 | BrainFlow (TypeScript) + Muse 2 为 MindOctopus 最优组合 |
 
 ## 调研时间
 
