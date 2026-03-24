@@ -21,7 +21,8 @@ bci-research/
 │   ├── 07-china-landscape.md          # 中国脑机接口产业与政策
 │   ├── 08-bci-ai-fusion.md           # BCI + AI 深度融合（LLM/脑基础模型/跨模态解码）
 │   ├── 09-bci-agent-architecture.md  # 脑机接口 Agent 架构设计与实现路径
-│   └── 10-sdk-selection-mindoctopus.md # MindOctopus SDK 技术选型（硬件+SDK 深度评测）
+│   ├── 10-sdk-selection-mindoctopus.md # MindOctopus SDK 技术选型（硬件+SDK 深度评测）
+│   └── 11-neuralink-tech-stack.md     # Neuralink 技术栈深度解析（芯片→固件→App 全栈）
 ├── references/
 │   └── sources.md                     # 参考文献与信息源
 └── assets/                            # 图片等资源（待补充）
