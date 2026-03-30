@@ -1,0 +1,26 @@
+[project]
+name = "bci-agent"
+version = "0.1.0"
+description = "BCI AI Agent MVP - 脑机接口意念传输AI智能体"
+requires-python = ">=3.11"
+dependencies = [
+    "brainflow>=5.12.0",
+    "langgraph>=0.2.0",
+    "langchain-openai>=0.3.0",
+    "langchain-core>=0.3.0",
+    "numpy>=1.24.0",
+    "python-dotenv>=1.0.0",
+    "httpx[socks]>=0.27.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+]
+
+[project.scripts]
+bci-agent = "bci_agent.main:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

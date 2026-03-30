@@ -11,3 +11,11 @@
 # Compiled
 *.pyc
 __pycache__/
+
+# Python
+.venv/
+*.egg-info/
+
+# Environment
+.env
+notes.txt
