@@ -1,0 +1,7 @@
+{
+  "name": "bci-agent",
+  "timeout": 30,
+  "runtime": "Python3.12",
+  "handler": "index.main",
+  "description": "BCI Agent - GLM-4-Flash brain state responder"
+}
