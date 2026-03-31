@@ -1,65 +1,102 @@
-import Image from "next/image";
+"use client";
+
+import { useEffect, useRef, useCallback, useState } from "react";
+import { useBciEngine } from "@/hooks/use-bci-engine";
+import { callAgent } from "@/lib/agent-api";
+import StatusCards from "@/components/status-cards";
+import WaveformChart from "@/components/waveform-chart";
+import BandBars from "@/components/band-bars";
+import ChatPanel from "@/components/chat-panel";
+import type { ChatMessage } from "@/components/chat-panel";
+import StateSwitcher from "@/components/state-switcher";
+import type { BrainState } from "@/lib/signal-generator";
+import type { BandPowers } from "@/lib/band-analyzer";
 
 export default function Home() {
+  const engine = useBciEngine();
+  const lastStateRef = useRef("idle");
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [loading, setLoading] = useState(false);
+  const msgIdRef = useRef(0);
+
+  const addMessage = useCallback((type: ChatMessage["type"], text: string) => {
+    const id = String(++msgIdRef.current);
+    setMessages((prev) => [...prev, { id, type, text }]);
+  }, []);
+
+  const invokeAgent = useCallback(
+    async (state: string, confidence: number, bands: BandPowers, message?: string) => {
+      setLoading(true);
+      try {
+        const response = await callAgent({ state, confidence, bands, message });
+        addMessage("agent", response);
+      } catch (e) {
+        addMessage("agent", `[错误] ${e instanceof Error ? e.message : "Agent 调用失败"}`);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [addMessage],
+  );
+
+  // Auto-invoke agent on state change
+  useEffect(() => {
+    const { state, confidence } = engine.decoded;
+    if (state !== lastStateRef.current && state !== "idle" && confidence >= 0.5) {
+      addMessage("system", `脑状态变化: ${lastStateRef.current} → ${state}`);
+      invokeAgent(state, confidence, engine.bands);
+      lastStateRef.current = state;
+    }
+  }, [engine.decoded, engine.bands, addMessage, invokeAgent]);
+
+  // Auto-start on mount
+  useEffect(() => {
+    engine.start();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleSend = (text: string) => {
+    addMessage("user", text);
+    invokeAgent(engine.decoded.state, engine.decoded.confidence, engine.bands, text);
+  };
+
+  const handleSwitch = (state: BrainState) => {
+    engine.switchState(state);
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="min-h-screen bg-[#f8f9fc]">
+      {/* Nav */}
+      <nav className="bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center text-white text-sm font-bold">
+            B
+          </div>
+          <span className="font-bold text-slate-800">BCI Agent</span>
+          <span className="text-xs text-slate-400 ml-2">脑机接口 AI 智能体</span>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <StateSwitcher current={engine.decoded.state} onSwitch={handleSwitch} />
+      </nav>
+
+      {/* Main */}
+      <div className="flex gap-4 p-4 h-[calc(100vh-57px)]">
+        {/* Left: signal viz 60% */}
+        <div className="flex-[3] flex flex-col gap-3 min-w-0">
+          <StatusCards
+            state={engine.decoded.state}
+            confidence={engine.decoded.confidence}
+            isRunning={engine.isRunning}
+          />
+          <div className="flex-1">
+            <WaveformChart data={engine.waveform} />
+          </div>
+          <BandBars bands={engine.bands} />
         </div>
-      </main>
+
+        {/* Right: AI chat 40% */}
+        <div className="flex-[2] min-w-0">
+          <ChatPanel messages={messages} onSend={handleSend} loading={loading} />
+        </div>
+      </div>
     </div>
   );
 }
