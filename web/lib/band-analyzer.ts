@@ -141,7 +141,11 @@ export function classifyState(bands: BandPowers): BrainDecoded {
   let state: string;
   let confidence: number;
 
-  if (ratioBetaAlpha > 2.0) {
+  // Check command first: high beta AND high gamma distinguishes from pure focused
+  if (beta > 0.25 && gamma > 0.15 && gamma / beta > 0.5) {
+    state = "command";
+    confidence = 0.7;
+  } else if (ratioBetaAlpha > 2.0) {
     state = "focused";
     confidence = Math.min(ratioBetaAlpha / 4, 1);
   } else if (ratioAlphaBeta > 2.0) {
@@ -150,9 +154,6 @@ export function classifyState(bands: BandPowers): BrainDecoded {
   } else if (ratioThetaAlpha > 1.5) {
     state = "fatigued";
     confidence = Math.min(ratioThetaAlpha / 3, 1);
-  } else if (beta > 0.3 && gamma > 0.2) {
-    state = "command";
-    confidence = 0.6;
   } else {
     state = "idle";
     confidence = 0.3;

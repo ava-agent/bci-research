@@ -78,7 +78,7 @@ export class SignalGenerator {
   generate(numSamples: number): SignalPoint[] {
     const points: SignalPoint[] = [];
     const bandKeys = Object.keys(BANDS) as (keyof typeof BANDS)[];
-    const lerpFactor = 0.01;
+    const lerpFactor = 0.05;
 
     for (let i = 0; i < numSamples; i++) {
       // Smooth transition from current amplitudes toward target

@@ -61,6 +61,12 @@ export default function Home() {
 
   const handleSwitch = (state: BrainState) => {
     engine.switchState(state);
+    // Immediately trigger agent on manual switch (don't wait for classifier)
+    if (state !== "idle" && !loading) {
+      lastStateRef.current = state;
+      addMessage("system", `手动切换脑状态: → ${state}`);
+      invokeAgent(state, 0.9, engine.bands);
+    }
   };
 
   return (
