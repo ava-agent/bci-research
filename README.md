@@ -1,10 +1,64 @@
 # BCI Research - 脑机接口技术调研
 
-> 脑机接口（Brain-Computer Interface, BCI）技术全面调研项目
+> 脑机接口（Brain-Computer Interface, BCI）技术全面调研项目 + 可交互 BCI Agent Demo
 
-## 项目概述
+---
 
-本项目系统性地调研了脑机接口（BCI）领域的技术原理、产业格局、应用场景、开源生态、伦理法规等核心方面，旨在为研究者和开发者提供全面的参考资料。
+## BCI Agent Demo
+
+可交互的脑机接口 AI 智能体演示，支持实时合成脑电信号可视化与 AI 响应。
+
+**在线体验**: https://bci-agent-demo.vercel.app
+
+### 功能特性
+
+- 实时合成 EEG 信号生成（4 通道，250Hz 采样率）
+- 频带能量分析（δ/θ/α/β/γ）
+- 脑状态分类（专注/放松/疲劳/指令/空闲）
+- 实时波形可视化
+- AI Agent 响应脑状态变化
+- 响应式设计（支持移动端）
+
+### 技术栈
+
+| 层级 | 技术 |
+|------|------|
+| 前端 | Next.js 16 + TypeScript + TailwindCSS |
+| 可视化 | ECharts |
+| 信号处理 | 合成信号生成 + DFT 频带分析 |
+| AI 后端 | Cloudbase 云函数 + GLM-4-Flash |
+| 部署 | Vercel (前端) + Tencent Cloudbase (API) |
+
+### 本地运行
+
+```bash
+cd web
+npm install
+npm run dev
+
+# 访问 http://localhost:3000
+```
+
+### 项目结构
+
+```
+web/
+├── app/page.tsx           # 主页面
+├── lib/
+│   ├── signal-generator.ts  # 合成 EEG 信号生成
+│   ├── band-analyzer.ts     # FFT 频带分析 + 状态分类
+│   └── agent-api.ts         # AI Agent API 调用
+├── hooks/
+│   └── use-bci-engine.ts    # BCI 引擎 Hook
+└── components/
+    ├── waveform-chart.tsx   # 实时波形图
+    ├── band-bars.tsx        # 频带能量条
+    ├── status-cards.tsx     # 状态卡片
+    ├── chat-panel.tsx       # AI 聊天面板
+    └── state-switcher.tsx   # 状态切换器
+```
+
+---
 
 ## 文档结构
 
@@ -19,13 +73,15 @@ bci-research/
 │   ├── 05-open-source-resources.md    # 开源项目与开发资源
 │   ├── 06-ethics-and-regulation.md    # 伦理、法规与挑战
 │   ├── 07-china-landscape.md          # 中国脑机接口产业与政策
-│   ├── 08-bci-ai-fusion.md           # BCI + AI 深度融合（LLM/脑基础模型/跨模态解码）
-│   ├── 09-bci-agent-architecture.md  # 脑机接口 Agent 架构设计与实现路径
-│   ├── 10-sdk-selection-mindoctopus.md # MindOctopus SDK 技术选型（硬件+SDK 深度评测）
-│   └── 11-neuralink-tech-stack.md     # Neuralink 技术栈深度解析（芯片→固件→App 全栈）
-├── references/
-│   └── sources.md                     # 参考文献与信息源
-└── assets/                            # 图片等资源（待补充）
+│   ├── 08-bci-ai-fusion.md           # BCI + AI 深度融合
+│   ├── 09-bci-agent-architecture.md  # 脑机接口 Agent 架构设计
+│   ├── 10-sdk-selection-mindoctopus.md # MindOctopus SDK 技术选型
+│   ├── 11-neuralink-tech-stack.md     # Neuralink 技术栈深度解析
+│   └── superpowers/plans/             # 项目规划文档
+├── web/                               # BCI Agent Demo (Next.js)
+├── cloud/                             # 云函数部署
+└── references/
+    └── sources.md                     # 参考文献与信息源
 ```
 
 ## 核心发现
@@ -35,14 +91,15 @@ bci-research/
 | 全球临床试验 | 约 25 项 BCI 植入临床试验正在进行中 |
 | 市场规模 | 预计 2034 年达 124 亿美元（CAGR ~15%）|
 | 语音解码精度 | 最高达 99%，延迟 < 0.25 秒 |
-| 植入患者数 | Neuralink 已为全球 12 名重度瘫痪患者植入设备（截至 2025.9）|
-| 中国政策 | 七部门联合发布《脑机接口产业创新发展实施意见》（2025.7）|
-| 2030 目标 | 培育 2-3 家全球影响力领军企业 |
+| 植入患者数 | Neuralink 已为全球 12 名重度瘫痪患者植入设备 |
+| 中国政策 | 七部门联合发布《脑机接口产业创新发展实施意见》|
 | AI 融合 | LLM Copilot 使瘫痪患者机械臂任务从「无法完成」→ 6.5 分钟完成 |
-| 脑基础模型 | LaBraM 在 2,500 小时 EEG 上预训练，多任务 SOTA（ICLR 2024）|
-| Brain-to-Image | MindEye fMRI→图像重建精确匹配准确率 >90% |
 | SDK 选型 | BrainFlow (TypeScript) + Muse 2 为 MindOctopus 最优组合 |
+
+## 相关项目
+
+- **MindOctopus**: 基于 BrainFlow + Muse 2 的 `channel-brainwave` 适配器（OpenOctopus 生态）
 
 ## 调研时间
 
-2026 年 3 月
+2026 年 3 月 - 4 月
