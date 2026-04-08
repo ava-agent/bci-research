@@ -1,20 +1,21 @@
 "use client";
 
+import { memo } from "react";
 import type { BandPowers } from "@/lib/band-analyzer";
 
-const BAND_CONFIG: { key: keyof BandPowers; label: string; color: string }[] = [
-  { key: "delta", label: "δ", color: "#c7d2fe" },
-  { key: "theta", label: "θ", color: "#a5b4fc" },
-  { key: "alpha", label: "α", color: "#818cf8" },
-  { key: "beta",  label: "β", color: "#6366f1" },
-  { key: "gamma", label: "γ", color: "#4f46e5" },
+const BAND_CONFIG: { key: keyof BandPowers; label: string; color: string; name: string }[] = [
+  { key: "delta", label: "δ", color: "#3b82f6", name: "Delta (0.5-4 Hz) - 深睡" },
+  { key: "theta", label: "θ", color: "#10b981", name: "Theta (4-8 Hz) - 冥想" },
+  { key: "alpha", label: "α", color: "#f59e0b", name: "Alpha (8-13 Hz) - 放松" },
+  { key: "beta",  label: "β", color: "#f97316", name: "Beta (13-30 Hz) - 专注" },
+  { key: "gamma", label: "γ", color: "#ef4444", name: "Gamma (30-45 Hz) - 认知" },
 ];
 
 interface BandBarsProps {
   bands: BandPowers;
 }
 
-export default function BandBars({ bands }: BandBarsProps) {
+function BandBars({ bands }: BandBarsProps) {
   const maxValue = Math.max(...BAND_CONFIG.map((b) => bands[b.key]), 1e-6);
 
   return (
@@ -37,7 +38,7 @@ export default function BandBars({ bands }: BandBarsProps) {
                   backgroundColor: band.color,
                 }}
               />
-              <span className="text-xs text-gray-600">{band.label}</span>
+              <span className="text-xs text-gray-600" title={band.name}>{band.label}</span>
             </div>
           );
         })}
@@ -45,3 +46,5 @@ export default function BandBars({ bands }: BandBarsProps) {
     </div>
   );
 }
+
+export default memo(BandBars);

@@ -120,10 +120,14 @@ export function useBciEngine(): BciEngineState {
     return () => {
       if (generateTimerRef.current) {
         clearInterval(generateTimerRef.current);
+        generateTimerRef.current = null;
       }
       if (analyzeTimerRef.current) {
         clearInterval(analyzeTimerRef.current);
+        analyzeTimerRef.current = null;
       }
+      // 清理大数组避免内存泄漏
+      bufferRef.current = [];
     };
   }, []);
 

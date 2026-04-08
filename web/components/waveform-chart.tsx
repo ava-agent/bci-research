@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, memo } from "react";
 import ReactECharts from "echarts-for-react";
 import type { SignalPoint } from "@/lib/signal-generator";
 
@@ -8,7 +8,7 @@ interface WaveformChartProps {
   data: SignalPoint[];
 }
 
-export default function WaveformChart({ data }: WaveformChartProps) {
+function WaveformChart({ data }: WaveformChartProps) {
   const option = useMemo(() => {
     const ch0 = data.map((p) => [p.timestamp, p.channels[0]]);
     const ch1 = data.map((p) => [p.timestamp, p.channels[1]]);
@@ -60,3 +60,10 @@ export default function WaveformChart({ data }: WaveformChartProps) {
     </div>
   );
 }
+
+export default memo(WaveformChart, (prev, next) => {
+  // 只比较数据长度和最后一个点的时间戳，避免不必要的重渲染
+  if (prev.data.length !== next.data.length) return false;
+  if (prev.data.length === 0) return true;
+  return prev.data[prev.data.length - 1]?.timestamp === next.data[next.data.length - 1]?.timestamp;
+});
