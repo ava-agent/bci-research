@@ -2,6 +2,10 @@
 
 > 脑机接口（Brain-Computer Interface, BCI）技术全面调研项目 + 可交互 BCI Agent Demo
 
+<p align="center">
+  <img src="assets/images/bci-banner.png" alt="BCI Banner" width="600">
+</p>
+
 ---
 
 ## BCI Agent Demo
@@ -19,6 +23,14 @@
 - AI Agent 响应脑状态变化
 - 响应式设计（支持移动端）
 
+### 系统架构
+
+<p align="center">
+  <img src="assets/images/architecture.png" alt="BCI Agent Architecture" width="700">
+</p>
+
+**数据流**: 合成信号生成 → 频带能量分析 → 脑状态分类 → AI Agent 响应
+
 ### 技术栈
 
 | 层级 | 技术 |
@@ -28,6 +40,19 @@
 | 信号处理 | 合成信号生成 + DFT 频带分析 |
 | AI 后端 | Cloudbase 云函数 + GLM-4-Flash |
 | 部署 | Vercel (前端) + Tencent Cloudbase (API) |
+
+### 脑波信号可视化
+
+<p align="center">
+  <img src="assets/images/eeg-waveform.png" alt="EEG Waveform Visualization" width="600">
+</p>
+
+**支持的频带**:
+- **δ (Delta)**: 0.5-4 Hz - 深睡状态
+- **θ (Theta)**: 4-8 Hz - 冥想/放松
+- **α (Alpha)**: 8-13 Hz - 清醒放松
+- **β (Beta)**: 13-30 Hz - 专注思考
+- **γ (Gamma)**: 30-45 Hz - 高级认知
 
 ### 本地运行
 
