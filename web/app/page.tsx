@@ -13,6 +13,9 @@ import type { BrainState } from "@/lib/signal-generator";
 import type { BandPowers } from "@/lib/band-analyzer";
 
 const MAX_MESSAGES = 100;
+const INVOKE_DEBOUNCE_MS = 300;
+const AUTO_INVOKE_CONFIDENCE_THRESHOLD = 0.5;
+const MANUAL_INVOKE_CONFIDENCE = 0.9;
 
 export default function Home() {
   const engine = useBciEngine();
@@ -21,54 +24,92 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const msgIdRef = useRef(0);
   const invokeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const isMountedRef = useRef(true);
+
+  // Track mount state for async cleanup
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (invokeTimeoutRef.current) {
+        clearTimeout(invokeTimeoutRef.current);
+      }
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
 
   const addMessage = useCallback((type: ChatMessage["type"], text: string) => {
+    if (!isMountedRef.current) return;
     const id = `${Date.now()}-${++msgIdRef.current}`;
     setMessages((prev) => {
       const next = [...prev, { id, type, text }];
-      // 限制消息数量，保留最近100条
       return next.length > MAX_MESSAGES ? next.slice(-MAX_MESSAGES) : next;
     });
   }, []);
 
   const invokeAgent = useCallback(
     async (state: string, confidence: number, bands: BandPowers, message?: string) => {
-      // 清除之前的防抖定时器
+      // Clear previous timeout
       if (invokeTimeoutRef.current) {
         clearTimeout(invokeTimeoutRef.current);
       }
 
-      // 设置新的防抖调用
+      // Cancel previous request
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      abortControllerRef.current = new AbortController();
+
       invokeTimeoutRef.current = setTimeout(async () => {
+        if (!isMountedRef.current) return;
+
         setLoading(true);
         try {
-          const response = await callAgent({ state, confidence, bands, message });
-          addMessage("agent", response);
+          const response = await callAgent(
+            { state, confidence, bands, message },
+            abortControllerRef.current?.signal
+          );
+          if (isMountedRef.current) {
+            addMessage("agent", response);
+          }
         } catch (e) {
-          addMessage("agent", `[错误] ${e instanceof Error ? e.message : "Agent 调用失败"}`);
+          if (isMountedRef.current && e instanceof Error && e.name !== "AbortError") {
+            addMessage("agent", `[错误] ${e.message || "Agent 调用失败"}`);
+          }
         } finally {
-          setLoading(false);
+          if (isMountedRef.current) {
+            setLoading(false);
+          }
         }
-      }, 300);
+      }, INVOKE_DEBOUNCE_MS);
     },
-    [addMessage],
+    [addMessage]
   );
 
   // Auto-invoke agent on state change
   useEffect(() => {
     const { state, confidence } = engine.decoded;
-    if (state !== lastStateRef.current && state !== "idle" && confidence >= 0.5) {
+    if (state !== lastStateRef.current && state !== "idle" && confidence >= AUTO_INVOKE_CONFIDENCE_THRESHOLD) {
       addMessage("system", `脑状态变化: ${lastStateRef.current} → ${state}`);
       invokeAgent(state, confidence, engine.bands);
     }
-    // 始终同步 lastStateRef
     lastStateRef.current = state;
   }, [engine.decoded, engine.bands, addMessage, invokeAgent]);
 
   // Auto-start on mount
   useEffect(() => {
     engine.start();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSend = (text: string) => {
     addMessage("user", text);
@@ -77,11 +118,10 @@ export default function Home() {
 
   const handleSwitch = (state: BrainState) => {
     engine.switchState(state);
-    // Immediately trigger agent on manual switch (don't wait for classifier)
     if (state !== "idle" && !loading) {
       lastStateRef.current = state;
       addMessage("system", `手动切换脑状态: → ${state}`);
-      invokeAgent(state, 0.9, engine.bands);
+      invokeAgent(state, MANUAL_INVOKE_CONFIDENCE, engine.bands);
     }
   };
 
