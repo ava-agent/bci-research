@@ -26,8 +26,7 @@ const INTENT_TEXT = {
 };
 
 const ALLOWED_ORIGINS = [
-  "https://bci-agent-demo.vercel.app",
-  "https://bci-agent-demo-k25yltdyi-kevintens-projects.vercel.app",
+  "https://bci.rxcloud.group",
   "http://localhost:3000",
 ];
 

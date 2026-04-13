@@ -12,7 +12,7 @@
 
 可交互的脑机接口 AI 智能体演示，支持实时合成脑电信号可视化与 AI 响应。
 
-**在线体验**: https://bci-agent-demo.vercel.app
+**在线体验**: https://bci.rxcloud.group
 
 ### 功能特性
 
