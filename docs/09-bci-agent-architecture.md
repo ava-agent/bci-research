@@ -315,12 +315,12 @@ AI 实时监测认知状态，主动提供辅助。
 │                                           │
 │  Agent 框架层                              │
 │  ├── LangChain / LangGraph               │
-│  ├── Claude Agent SDK                     │
+│  ├── LangGraph / OpenAI-compatible Agent  │
 │  ├── CrewAI (多 Agent 编排)              │
 │  └── 自定义 ReAct 循环                    │
 │                                           │
 │  LLM 层                                   │
-│  ├── Claude (意图理解 + 规划)             │
+│  ├── Volcengine Ark (意图理解 + 规划)     │
 │  ├── 本地模型: LLaMA / DeepSeek (低延迟) │
 │  └── 多模态 LLM (视觉+语言)              │
 │                                           │
@@ -388,7 +388,7 @@ while True:
 class BCIAgent:
     def __init__(self):
         self.decoder = NeuralDecoder()        # EEG → 自然语言意图
-        self.llm = Claude()                    # 核心推理引擎
+        self.llm = ArkChatModel()              # 核心推理引擎
         self.tools = ToolRegistry()            # 可用工具
         self.memory = ConversationMemory()     # 对话记忆
         self.safety = SafetyGuardian()         # 安全守护

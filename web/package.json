@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "tsc --noEmit --incremental false",
+    "type-check": "tsc --noEmit --incremental false"
   },
   "dependencies": {
     "echarts": "^6.0.0",

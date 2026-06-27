@@ -29,7 +29,7 @@ Each document is self-contained but builds on concepts from earlier documents. T
 
 ## BCI Agent MVP (`app/`)
 
-Python application: BrainFlow (synthetic EEG) → band power extraction → brain state classification → LangGraph agent (Claude LLM).
+Python application: BrainFlow (synthetic EEG) → band power extraction → brain state classification → LangGraph agent (Volcengine Ark via OpenAI-compatible ChatOpenAI).
 
 ### Commands
 
@@ -41,7 +41,7 @@ uv pip install -e ".[dev]"
 # Run tests
 .venv/bin/python -m pytest tests/ -v
 
-# Run the agent (needs ANTHROPIC_API_KEY in .env)
+# Run the agent (needs ARK_API_KEY in .env)
 .venv/bin/python -m bci_agent.main
 ```
 

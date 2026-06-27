@@ -19,3 +19,6 @@ __pycache__/
 # Environment
 .env
 notes.txt
+
+# Local planning / generated previews
+.superpowers/
