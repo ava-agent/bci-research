@@ -17,9 +17,9 @@ def main():
     print("BrainFlow Synthetic Board (模拟数据)")
     print("Ctrl+C 停止\n")
 
-    if not os.environ.get("OPENAI_API_KEY"):
-        print("[警告] 未设置 OPENAI_API_KEY，Agent 将无法调用 GLM")
-        print("[提示] 复制 .env.example 为 .env 并填入你的智谱 API Key\n")
+    if not os.environ.get("ARK_API_KEY"):
+        print("[警告] 未设置 ARK_API_KEY，Agent 将无法调用 Ark")
+        print("[提示] 复制 .env.example 为 .env 并填入你的 Ark API Key\n")
 
     source = SignalSource()
     graph = build_graph()

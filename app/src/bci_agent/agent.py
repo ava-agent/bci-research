@@ -1,4 +1,5 @@
 """LangGraph agent for processing BCI-decoded intentions."""
+import os
 from typing import Literal, TypedDict
 
 from langchain_openai import ChatOpenAI
@@ -9,6 +10,9 @@ from langgraph.prebuilt import ToolNode
 from .tools import get_current_time, suggest_activity, take_note
 
 TOOLS = [get_current_time, take_note, suggest_activity]
+
+DEFAULT_ARK_BASE_URL = "https://ark.cn-beijing.volces.com/api/coding/v3"
+DEFAULT_ARK_CHAT_MODEL = "doubao-seed-2-0-code-preview-260215"
 
 SYSTEM_PROMPT = """\
 你是一个脑机接口 AI Agent。你通过 BCI 设备接收用户的脑电信号，\
@@ -45,12 +49,18 @@ def interpret_intent(state: AgentState) -> dict:
     return {"messages": messages}
 
 
+def create_llm():
+    """Create the Ark-compatible chat model."""
+    return ChatOpenAI(
+        model=os.environ.get("ARK_CHAT_MODEL", DEFAULT_ARK_CHAT_MODEL),
+        base_url=os.environ.get("ARK_BASE_URL", DEFAULT_ARK_BASE_URL),
+        api_key=os.environ.get("ARK_API_KEY", ""),
+    )
+
+
 def call_llm(state: AgentState) -> dict:
-    """Invoke GLM with tool bindings."""
-    llm = ChatOpenAI(
-        model="glm-4-flash",
-        base_url="https://open.bigmodel.cn/api/paas/v4/",
-    ).bind_tools(TOOLS)
+    """Invoke Ark CodingPlan with tool bindings."""
+    llm = create_llm().bind_tools(TOOLS)
     response = llm.invoke(state["messages"])
     return {"messages": state["messages"] + [response]}
 

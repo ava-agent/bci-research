@@ -38,7 +38,7 @@
 | 前端 | Next.js 16 + TypeScript + TailwindCSS |
 | 可视化 | ECharts |
 | 信号处理 | 合成信号生成 + DFT 频带分析 |
-| AI 后端 | Cloudbase 云函数 + GLM-4-Flash |
+| AI 后端 | Cloudbase 云函数 + 火山引擎 Ark CodingPlan |
 | 部署 | Vercel (前端) + Tencent Cloudbase (API) |
 
 ### 脑波信号可视化

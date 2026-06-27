@@ -17,7 +17,7 @@
 │  ├── JS 合成脑波生成器     │  /api/agent          │                        │
 │  ├── 前端信号处理          │  {state, bands,      │  ├── classify_state()  │
 │  │   └── 频带提取 (FFT)   │   message}           │  ├── decode_intent()   │
-│  ├── 状态解码 (前端)       │                      │  ├── GLM-4-Flash 调用   │
+│  ├── 状态解码 (前端)       │                      │  ├── Ark CodingPlan 调用│
 │  ├── 实时脑波图 (ECharts)  │ ◄════════════════════│  └── 返回 Agent 回复    │
 │  ├── 频带柱状图            │  {response, tools}   │                        │
 │  ├── AI 对话面板           │                      └────────────────────────┘
@@ -75,7 +75,7 @@
   }
   ```
 
-**逻辑**: 复用现有 agent.py 的 LangGraph 图，接收前端已解码的脑状态，调用 GLM-4-Flash 生成回复。
+**逻辑**: 复用现有 agent.py 的 LangGraph 图，接收前端已解码的脑状态，调用火山引擎 Ark CodingPlan 生成回复。
 
 ### 数据流
 
@@ -96,4 +96,4 @@
 
 - 前端: Vercel（自动部署，绑域名）
 - 后端: Cloudbase 云函数（Python runtime）
-- 环境变量: `OPENAI_API_KEY`（智谱 API Key）配置在 Cloudbase 云函数中
+- 环境变量: `ARK_API_KEY`、`ARK_BASE_URL`、`ARK_CHAT_MODEL` 配置在 Cloudbase 云函数中

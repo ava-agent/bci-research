@@ -1,7 +1,10 @@
 /**
  * Cloudbase Cloud Function: BCI Agent
- * Receives brain state from frontend, calls GLM-4-Flash, returns response.
+ * Receives brain state from frontend, calls Ark CodingPlan, returns response.
  */
+
+const DEFAULT_ARK_BASE_URL = "https://ark.cn-beijing.volces.com/api/coding/v3";
+const DEFAULT_ARK_CHAT_MODEL = "doubao-seed-2-0-code-preview-260215";
 
 const SYSTEM_PROMPT = `你是一个脑机接口 AI Agent。你通过 BCI 设备接收用户的脑电信号，将解码后的意图转化为有用的响应和行动。
 
@@ -65,19 +68,26 @@ function validateRequest(body) {
   };
 }
 
-async function callGLM(systemPrompt, userMessage, apiKey) {
+function getChatCompletionsUrl() {
+  const baseUrl = (process.env.ARK_BASE_URL || DEFAULT_ARK_BASE_URL).replace(/\/$/, "");
+  return `${baseUrl}/chat/completions`;
+}
+
+async function callArk(systemPrompt, userMessage) {
+  const apiKey = process.env.ARK_API_KEY;
+
   if (!apiKey) {
-    throw new Error("GLM_API_KEY not configured");
+    throw new Error("ARK_API_KEY not configured");
   }
 
-  const resp = await fetch("https://open.bigmodel.cn/api/paas/v4/chat/completions", {
+  const resp = await fetch(getChatCompletionsUrl(), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: "glm-4-flash",
+      model: process.env.ARK_CHAT_MODEL || DEFAULT_ARK_CHAT_MODEL,
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userMessage },
@@ -86,8 +96,8 @@ async function callGLM(systemPrompt, userMessage, apiKey) {
   });
 
   if (!resp.ok) {
-    const text = await resp.text();
-    throw new Error(`GLM API error ${resp.status}`);
+    await resp.text();
+    throw new Error(`Ark API error ${resp.status}`);
   }
 
   const data = await resp.json();
@@ -144,8 +154,6 @@ exports.main = async (event, context) => {
   }
 
   const { state, confidence, bands, message } = validated;
-  const apiKey = process.env.GLM_API_KEY;
-
   // Build prompts
   const system = SYSTEM_PROMPT
     .replace("{brain_state}", state)
@@ -159,7 +167,7 @@ exports.main = async (event, context) => {
   const userContent = `[BCI 意图解码] ${intentText}`;
 
   try {
-    const response = await callGLM(system, userContent, apiKey);
+    const response = await callArk(system, userContent);
     return {
       statusCode: 200,
       headers: corsHeaders,

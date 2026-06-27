@@ -1,4 +1,4 @@
-"""Cloudbase cloud function: BCI Agent powered by GLM-4-Flash."""
+"""Cloudbase cloud function: BCI Agent powered by Ark CodingPlan."""
 
 import json
 import os
@@ -32,6 +32,9 @@ def suggest_activity(brain_state: str) -> str:
 
 
 TOOLS = [suggest_activity]
+
+DEFAULT_ARK_BASE_URL = "https://ark.cn-beijing.volces.com/api/coding/v3"
+DEFAULT_ARK_CHAT_MODEL = "doubao-seed-2-0-code-preview-260215"
 
 # ---------------------------------------------------------------------------
 # Intent text mapping
@@ -94,13 +97,18 @@ def interpret_intent(state: AgentState) -> dict:
     return {"messages": messages}
 
 
+def create_llm():
+    """Create the Ark-compatible chat model."""
+    return ChatOpenAI(
+        model=os.environ.get("ARK_CHAT_MODEL", DEFAULT_ARK_CHAT_MODEL),
+        base_url=os.environ.get("ARK_BASE_URL", DEFAULT_ARK_BASE_URL),
+        api_key=os.environ.get("ARK_API_KEY", ""),
+    )
+
+
 def call_llm(state: AgentState) -> dict:
-    """Invoke GLM-4-Flash with tool bindings."""
-    llm = ChatOpenAI(
-        model="glm-4-flash",
-        base_url="https://open.bigmodel.cn/api/paas/v4/",
-        api_key=os.environ.get("GLM_API_KEY", ""),
-    ).bind_tools(TOOLS)
+    """Invoke Ark CodingPlan with tool bindings."""
+    llm = create_llm().bind_tools(TOOLS)
     response = llm.invoke(state["messages"])
     return {"messages": state["messages"] + [response]}
 
@@ -160,7 +168,7 @@ CORS_HEADERS = {
 def main(event, context):
     """Cloudbase cloud function handler.
 
-    Receives brain state + optional user message, invokes GLM-4-Flash via
+    Receives brain state + optional user message, invokes Ark CodingPlan via
     LangGraph, and returns the agent response.
     """
     # Handle CORS preflight
