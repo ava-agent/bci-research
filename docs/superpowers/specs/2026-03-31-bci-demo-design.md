@@ -17,7 +17,7 @@
 │  ├── JS 合成脑波生成器     │  /api/agent          │                        │
 │  ├── 前端信号处理          │  {state, bands,      │  ├── classify_state()  │
 │  │   └── 频带提取 (FFT)   │   message}           │  ├── decode_intent()   │
-│  ├── 状态解码 (前端)       │                      │  ├── Ark CodingPlan 调用│
+│  ├── 状态解码 (前端)       │                      │  ├── Ark Agent Plan 调用│
 │  ├── 实时脑波图 (ECharts)  │ ◄════════════════════│  └── 返回 Agent 回复    │
 │  ├── 频带柱状图            │  {response, tools}   │                        │
 │  ├── AI 对话面板           │                      └────────────────────────┘
@@ -75,7 +75,7 @@
   }
   ```
 
-**逻辑**: 复用现有 agent.py 的 LangGraph 图，接收前端已解码的脑状态，调用火山引擎 Ark CodingPlan 生成回复。
+**逻辑**: 复用现有 agent.py 的 LangGraph 图，接收前端已解码的脑状态，调用火山引擎 Ark Agent Plan 生成回复。
 
 ### 数据流
 

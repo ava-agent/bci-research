@@ -89,7 +89,7 @@ pythonpath = ["src"]
 
 ```
 ARK_API_KEY=your_ark_api_key_here
-ARK_BASE_URL=https://ark.cn-beijing.volces.com/api/coding/v3
+ARK_BASE_URL=https://ark.cn-beijing.volces.com/api/plan/v3
 ARK_CHAT_MODEL=doubao-seed-2-0-code-preview-260215
 ```
 
@@ -555,7 +555,7 @@ from .tools import get_current_time, suggest_activity, take_note
 
 TOOLS = [get_current_time, take_note, suggest_activity]
 
-DEFAULT_ARK_BASE_URL = "https://ark.cn-beijing.volces.com/api/coding/v3"
+DEFAULT_ARK_BASE_URL = "https://ark.cn-beijing.volces.com/api/plan/v3"
 DEFAULT_ARK_CHAT_MODEL = "doubao-seed-2-0-code-preview-260215"
 
 SYSTEM_PROMPT = """\
@@ -594,7 +594,7 @@ def interpret_intent(state: AgentState) -> dict:
 
 
 def call_llm(state: AgentState) -> dict:
-    """Invoke Ark CodingPlan with tool bindings."""
+    """Invoke Ark Agent Plan with tool bindings."""
     llm = ChatOpenAI(
         model=os.environ.get("ARK_CHAT_MODEL", DEFAULT_ARK_CHAT_MODEL),
         base_url=os.environ.get("ARK_BASE_URL", DEFAULT_ARK_BASE_URL),

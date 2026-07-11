@@ -1,9 +1,9 @@
 /**
  * Cloudbase Cloud Function: BCI Agent
- * Receives brain state from frontend, calls Ark CodingPlan, returns response.
+ * Receives brain state from frontend, calls Ark Agent Plan, returns response.
  */
 
-const DEFAULT_ARK_BASE_URL = "https://ark.cn-beijing.volces.com/api/coding/v3";
+const DEFAULT_ARK_BASE_URL = "https://ark.cn-beijing.volces.com/api/plan/v3";
 const DEFAULT_ARK_CHAT_MODEL = "doubao-seed-2-0-code-preview-260215";
 
 const SYSTEM_PROMPT = `你是一个脑机接口 AI Agent。你通过 BCI 设备接收用户的脑电信号，将解码后的意图转化为有用的响应和行动。
