@@ -64,6 +64,22 @@ npm run dev
 # 访问 http://localhost:3000
 ```
 
+### 模型调用保护
+
+- 浏览器请求只接受 `https://bci.rxcloud.group` 与本地开发 Origin，其他 Origin 返回 403。
+- 云函数只接受 `POST` / `OPTIONS`，并严格校验脑状态、置信度、五类频带数据、消息类型与 10 KiB 请求体上限。
+- 默认每个来源 IP 每小时最多 20 个通过校验的请求，单实例每天最多 500 个请求；可用 `BCI_AGENT_HOURLY_LIMIT` 与 `BCI_AGENT_DAILY_LIMIT` 调整。
+- Ark 请求默认 20 秒超时，输出最多 256 Token；可用 `BCI_AGENT_UPSTREAM_TIMEOUT_MS` 与 `BCI_AGENT_MAX_OUTPUT_TOKENS` 调整。
+- 前端自动脑状态调用至少间隔 60 秒；确定性的 4xx 不重试，5xx 或网络错误最多重试 1 次。
+
+当前限流保存在云函数实例内，只用于抑制单实例突发流量，不是跨实例的计费硬上限。需要硬预算时，应在 CloudBase 登录恢复后接入持久化原子计数器，再发布云函数。
+
+```bash
+cd cloud/bci-agent
+npm test
+npm run check
+```
+
 ### 项目结构
 
 ```

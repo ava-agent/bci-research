@@ -1,5 +1,9 @@
 {
   "name": "bci-agent",
   "version": "1.0.0",
-  "description": "BCI Agent - Ark Agent Plan brain state responder"
+  "description": "BCI Agent - Ark Agent Plan brain state responder",
+  "scripts": {
+    "check": "node --check index.js",
+    "test": "node --test index.test.js"
+  }
 }
