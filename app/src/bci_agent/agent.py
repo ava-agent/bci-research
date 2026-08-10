@@ -11,7 +11,7 @@ from .tools import get_current_time, suggest_activity, take_note
 
 TOOLS = [get_current_time, take_note, suggest_activity]
 
-DEFAULT_ARK_BASE_URL = "https://ark.cn-beijing.volces.com/api/coding/v3"
+DEFAULT_ARK_BASE_URL = "https://ark.cn-beijing.volces.com/api/plan/v3"
 DEFAULT_ARK_CHAT_MODEL = "doubao-seed-2-0-code-preview-260215"
 
 SYSTEM_PROMPT = """\
@@ -59,7 +59,7 @@ def create_llm():
 
 
 def call_llm(state: AgentState) -> dict:
-    """Invoke Ark CodingPlan with tool bindings."""
+    """Invoke Ark Agent Plan with tool bindings."""
     llm = create_llm().bind_tools(TOOLS)
     response = llm.invoke(state["messages"])
     return {"messages": state["messages"] + [response]}

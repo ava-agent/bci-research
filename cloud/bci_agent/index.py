@@ -1,4 +1,4 @@
-"""Cloudbase cloud function: BCI Agent powered by Ark CodingPlan."""
+"""Cloudbase cloud function: BCI Agent powered by Ark Agent Plan."""
 
 import json
 import os
@@ -33,7 +33,7 @@ def suggest_activity(brain_state: str) -> str:
 
 TOOLS = [suggest_activity]
 
-DEFAULT_ARK_BASE_URL = "https://ark.cn-beijing.volces.com/api/coding/v3"
+DEFAULT_ARK_BASE_URL = "https://ark.cn-beijing.volces.com/api/plan/v3"
 DEFAULT_ARK_CHAT_MODEL = "doubao-seed-2-0-code-preview-260215"
 
 # ---------------------------------------------------------------------------
@@ -107,7 +107,7 @@ def create_llm():
 
 
 def call_llm(state: AgentState) -> dict:
-    """Invoke Ark CodingPlan with tool bindings."""
+    """Invoke Ark Agent Plan with tool bindings."""
     llm = create_llm().bind_tools(TOOLS)
     response = llm.invoke(state["messages"])
     return {"messages": state["messages"] + [response]}
@@ -168,7 +168,7 @@ CORS_HEADERS = {
 def main(event, context):
     """Cloudbase cloud function handler.
 
-    Receives brain state + optional user message, invokes Ark CodingPlan via
+    Receives brain state + optional user message, invokes Ark Agent Plan via
     LangGraph, and returns the agent response.
     """
     # Handle CORS preflight

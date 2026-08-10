@@ -15,6 +15,7 @@ import type { BandPowers } from "@/lib/band-analyzer";
 const MAX_MESSAGES = 100;
 const INVOKE_DEBOUNCE_MS = 300;
 const AUTO_INVOKE_CONFIDENCE_THRESHOLD = 0.5;
+const AUTO_INVOKE_COOLDOWN_MS = 60_000;
 const MANUAL_INVOKE_CONFIDENCE = 0.9;
 
 export default function Home() {
@@ -23,6 +24,7 @@ export default function Home() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(false);
   const msgIdRef = useRef(0);
+  const lastAutoInvokeAtRef = useRef(0);
   const invokeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
   const isMountedRef = useRef(true);
@@ -100,7 +102,11 @@ export default function Home() {
     const { state, confidence } = engine.decoded;
     if (state !== lastStateRef.current && state !== "idle" && confidence >= AUTO_INVOKE_CONFIDENCE_THRESHOLD) {
       addMessage("system", `脑状态变化: ${lastStateRef.current} → ${state}`);
-      invokeAgent(state, confidence, engine.bands);
+      const now = Date.now();
+      if (now - lastAutoInvokeAtRef.current >= AUTO_INVOKE_COOLDOWN_MS) {
+        lastAutoInvokeAtRef.current = now;
+        invokeAgent(state, confidence, engine.bands);
+      }
     }
     lastStateRef.current = state;
   }, [engine.decoded, engine.bands, addMessage, invokeAgent]);

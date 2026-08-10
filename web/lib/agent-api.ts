@@ -13,7 +13,21 @@ interface AgentResponse {
 
 const API_URL = process.env.NEXT_PUBLIC_AGENT_API_URL ?? "/api/agent";
 const TIMEOUT_MS = 15000;
-const MAX_RETRIES = 2;
+const MAX_RETRIES = 1;
+
+class AgentApiError extends Error {
+  constructor(
+    message: string,
+    readonly status: number,
+  ) {
+    super(message);
+    this.name = "AgentApiError";
+  }
+
+  get retryable(): boolean {
+    return this.status >= 500;
+  }
+}
 
 async function fetchWithTimeout(
   url: string,
@@ -59,13 +73,17 @@ export async function callAgent(
       );
 
       if (!res.ok) {
-        throw new Error(`Agent API error: ${res.status}`);
+        throw new AgentApiError(`Agent API error: ${res.status}`, res.status);
       }
 
       const data: AgentResponse = await res.json();
       return data.response;
     } catch (error) {
-      if (signal?.aborted || i === retries) {
+      if (
+        signal?.aborted ||
+        i === retries ||
+        (error instanceof AgentApiError && !error.retryable)
+      ) {
         throw error;
       }
       await new Promise((r) => setTimeout(r, 1000 * Math.pow(2, i)));

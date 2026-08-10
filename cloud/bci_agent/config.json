@@ -3,5 +3,5 @@
   "timeout": 30,
   "runtime": "Python3.12",
   "handler": "index.main",
-  "description": "BCI Agent - Ark CodingPlan brain state responder"
+  "description": "BCI Agent - Ark Agent Plan brain state responder"
 }
